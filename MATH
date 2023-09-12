@@ -1,0 +1,97 @@
+ll gcd(ll a, ll b)
+{
+    if (a == 0)
+        return b;
+    return gcd(b % a, a);
+}
+vector<int> sieve(int N){
+    const int N1=1e7+10;
+	vector<bool> isPrime(N1,1);
+	vector<int> hp(N1,0);
+	isPrime[0]=isPrime[1]=false;
+	for(int i=2;i<N1;++i){
+		if(isPrime[i]==true){
+			hp[i]=i;
+			for(int j=2*i;j<N1;j+=i){
+				hp[j]=i;
+				isPrime[j]=false;
+			}
+		}
+	}
+	vector<int> factors;
+	while(N>1){
+		int prime_factor=hp[N];
+		while(N%prime_factor==0){
+			N/=prime_factor;
+			factors.push_back(prime_factor);
+		}
+	}
+	return(factors);}
+
+vector<long long> fctrize(){
+	const int N1=1000001;
+	vector<bool> isPrime(N1,1);
+	vector<long long> facts;
+	isPrime[0]=isPrime[1]=false;
+	for(int i=2;i<N1;++i){
+		if(isPrime[i]==true){
+			
+			for(int j=2*i;j<N1;j+=i){
+				
+				isPrime[j]=false;
+			}
+		}
+	}
+//	if(N1<N)
+//	N=N1;
+	for(int i=0;i<N1;i++){
+		if(isPrime[i]){
+				
+				facts.push_back(i);
+				
+		}
+
+	}
+
+	return(facts);}
+
+ll sqroot(ll a){
+	ll x,y;
+	x=0;y=1e10+1;
+	ll mid=0;
+	while(x<y){
+		mid=(x+y)/2;
+		//cout<<mid<<"\n";
+		if(mid*mid>a){
+			y=mid+1;
+		}
+		else if(mid*mid<a&&(mid+1)*(mid+1)<=a){
+			x=mid;
+		}
+		else{
+			break;
+		}
+		
+	}
+	return mid;}
+ll power(long long x, ll y, ll p)
+{
+    ll res = 1;     // Initialize result
+ 
+    x = x % p; // Update x if it is more than or
+                // equal to p
+  
+    if (x == 0) return 0; // In case x is divisible by p;
+ 
+    while (y > 0)
+    {
+        // If y is odd, multiply x with result
+        if (y & 1)
+            res = (res*x) % p;
+ 
+        // y must be even now
+        y = y>>1; // y = y/2
+        x = (x*x) % p;
+    }
+    return res;
+}
