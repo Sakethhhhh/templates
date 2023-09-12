@@ -1,0 +1,3 @@
+const int K=25;
+const int MAXN=1e5+10;
+//int st[K+1][MAXN];
