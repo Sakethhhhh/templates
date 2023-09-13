@@ -4,7 +4,7 @@ int log2_floor(unsigned long long i) {
 template<class T>
 class SegTree{
 	private:
-		const T id = int_max;
+		const T id = 0;
 		vector<T> segtree;
 		
 	public:
@@ -24,20 +24,23 @@ class SegTree{
 			segtree[ind] = val;
 			//cout<<ind<<"\n";
 			for(; ind > 1; ind /= 2){
-				segtree[ind/2] = min(segtree[ind], segtree[ind^1]);
+				segtree[ind/2] = segtree[ind] ^ segtree[ind^1];
 			}
 		}
 		void display(){
 			cout<<len<<segtree.size()<<"\n";
 		}
-		T query(int node, int nL, int nR, int l, int r){
+		T _query(int node, int nL, int nR, int l, int r){
 			if(l > r) return id;
 			if(l==nL && r==nR){
 
 				return segtree[node];
 			}
 			int m = (nL+nR)/2;
-			return min(query(node*2,nL,m,l,min(r,m)),query(node*2+1,m+1,nR,max(l,m+1),r));
+			return (_query(node*2,nL,m,l,min(r,m))^_query(node*2+1,m+1,nR,max(l,m+1),r));
+		}
+		T query(int l, int r){
+			return _query(1,0,len-1,l,r);
 		}
 		
 };
