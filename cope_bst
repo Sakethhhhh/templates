@@ -1,0 +1,146 @@
+//#include <bits/stdc++.h>
+#include<stdio.h>
+#include<stdlib.h>
+using namespace std;
+typedef struct node{
+	int key;
+	struct node* left;
+	struct node* parent;
+	struct node* right;
+}node;
+typedef struct tree{
+	node* root;
+}tree;
+void init(node* temp){
+	temp->key=-1;
+	temp->left=NULL;
+	temp->right=NULL;
+	temp->parent=NULL;
+}
+void treeInsert(tree* T,node* z){
+	if(T->root == NULL){
+		T->root=z;
+		//printf("HO");
+		return;
+	}
+	node* temp=T->root;
+	node* prev=NULL;
+	//find null node
+	while(temp!=NULL){
+
+		prev=temp;
+		if(temp->key<=z->key){
+			temp=temp->right;
+		}
+		else{
+			temp=temp->left;
+		}
+	}
+	//printf("%d\n",prev->key);
+	z->parent=prev;
+	if(z->key < prev->key){
+		prev->left=z;
+	}else{
+		prev->right=z;
+	}
+}
+void transplant(tree* T, node* u, node* v){
+	//makes v the correct child of u's parent
+	if(u->parent==NULL){
+		T->root=v;
+	}
+	else if(u == u->parent->left){
+		u->parent->left=v;
+	}
+	else{
+		u->parent->right=v;
+	}
+	if(v!=NULL){
+		v->parent=u->parent;
+	}
+}
+node* min_value(node* x){
+	node *prev = x->parent;
+	while(x!=NULL){
+		prev=x;
+		x=x->left;
+	}
+	return prev;
+}
+void delete_node(node* u,tree* T){
+	//if node only one child, whee
+	if(u->left == NULL){
+		transplant(T, u, u->right);
+	}
+	else if(u->right == NULL)
+		transplant(T, u, u->left);
+	else{
+		//third case
+		node* succ = min_value(u->right);
+		if(succ->parent != u){
+			transplant(T, succ, succ->right);
+			succ->right = u->right;
+			succ->right->parent = succ;
+		}
+		transplant(T,u,succ);
+		succ->left=u->left;
+		u->left->parent=u;
+	}
+}
+node* findnode(node* u, int t){
+	if(u==NULL){
+		return u;
+	}
+	else{
+		if(u->key==t){
+			return u;
+		}
+		else if(u->key>t){
+			return findnode(u->left,t);
+		}
+		else{
+			return findnode(u->right,t);
+		}
+	}
+}
+void display(node* x){
+	if(x==NULL){
+		return;
+	}
+	printf("%d ",x->key);
+	display(x->left);
+	
+	display(x->right);
+}
+int main(void)
+{ 
+	tree* T;
+	T=(tree*)malloc(sizeof(tree));
+	T->root=NULL;
+	//printf("%d",T->root->key);
+	int val=5;
+	node* n1;
+	int n;
+	scanf("%d", &n);
+	for(int i=0;i<n;i++){
+		int val;
+		scanf("%d", &val);
+		n1=(node*)malloc(sizeof(node));
+		init(n1);
+		n1->key=val;
+		treeInsert(T, n1);
+
+	}
+	/*node* mn=findnode(T->root, 9);
+	if(mn!=NULL)
+	printf("%d", mn->key);
+	else
+		printf("Not Found\n");*/
+
+	display(T->root);
+	node* mn = findnode(T->root,50);
+	printf("\n");
+	delete_node(mn,T);
+	display(T->root);
+	//printf("%d\n",T->root->key );
+}
