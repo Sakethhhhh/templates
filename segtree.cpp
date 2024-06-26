@@ -1,46 +1,40 @@
-int log2_floor(unsigned long long i) {
-    return i ? __builtin_clzll(1) - __builtin_clzll(i) : -1;
-}
-template<class T>
-class SegTree{
-	private:
-		const T id = 0;
-		vector<T> segtree;
-		
-	public:
-		int len;
-		SegTree(int l){
-			int n = 1 << log2_floor(l);
-			if(l != n){
-				n = 1 << (log2_floor(l)+1);
-			}
-			len = n;
-			
-			segtree.resize(len*2, id);
-		}
+class SegTree {
+private:
+    const T id = (int64) - 1e18;
+    vector<T> t;
 
-		void update(int ind, T val){
-			ind+= len;
-			segtree[ind] = val;
-			//cout<<ind<<"\n";
-			for(; ind > 1; ind /= 2){
-				segtree[ind/2] = segtree[ind] ^ segtree[ind^1];
-			}
-		}
-		void display(){
-			cout<<len<<segtree.size()<<"\n";
-		}
-		T _query(int node, int nL, int nR, int l, int r){
-			if(l > r) return id;
-			if(l==nL && r==nR){
+public:
+    int n;
+    SegTree(int l) {
+        t.resize(l * 2);
+        n = l;
+    }
 
-				return segtree[node];
-			}
-			int m = (nL+nR)/2;
-			return (_query(node*2,nL,m,l,min(r,m))^_query(node*2+1,m+1,nR,max(l,m+1),r));
-		}
-		T query(int l, int r){
-			return _query(1,0,len-1,l,r);
-		}
-		
+    void build(vector<T> v){
+        for(int i = n; i < 2 * n; i++){
+            t[i] = v[i - n];
+        }
+        for(int i = n - 1; i >= 0; i--){
+            t[i] += t[(i << 1)] + t[(i << 1) ^ 1];
+        }
+    }
+
+    void modify(int ind, T val){
+        for(t[ind += n] = val; ind > 1; ind >>= 1){
+            t[ind >> 2] = t[ind] + t[ind ^ 1]; 
+        }
+    }
+
+    T _query(int l, int r){//[l, r) 
+        T res = 0;
+        for(l += n, r += n; l < r; l >>= 1, r >>= 1){
+            if(l & 1) res += t[l++];
+            if(r & 1) res += t[--r];
+        }
+        return res;
+    }
+    T query(int l, int r){//[l, r]
+        return _query(l, r + 1);
+    }
+
 };
